@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package fields;
+
+enum Enum {
+  a = 0;
+  b = 1;
+  c = 2;
+}
+
+message Sub {
+  string a = 1;
+}
+
+message Fields {
+  int32 a = 1;
+  int64 b = 2;
+  uint32 c = 3;
+  uint64 d = 4;
+  sint32 e = 5;
+  sint64 f = 6;
+  bool g = 7;
+  Enum h = 8;
+  fixed64 i = 9;
+  sfixed64 j = 10;
+  double k = 11;
+  string l = 12;
+  bytes m = 13;
+  Sub n = 14;
+  fixed32 o = 15;
+  sfixed32  p = 16;
+  map<int32, int32> q = 17;
+  map<int32, string> r = 18;
+  map<string, int32> s = 19;
+  map<uint64, Enum> t = 20;
+  repeated uint64 u = 21;
+  repeated bool v = 22;
+  repeated string w = 23;
+  oneof x {
+    string y = 25;
+    int32 z = 26;
+  }
+}

@@ -1,0 +1,35 @@
+/**
+ * This is a generic file comment
+ */
+syntax = "proto3";
+
+/**
+ * This is a comment for MyService
+ */
+service MyService {
+
+    /**
+     * This is a comment for MyMethod
+     */
+    rpc MyMethod (MyRequest) returns (MyResponse);
+}
+
+/**
+ * This is a comment for MyRequest
+ */
+message MyRequest {
+    /**
+     * This is a comment for path
+     */
+    string path = 1;
+}
+
+/**
+ * This is a comment for MyResponse
+ */
+message MyResponse {
+    /**
+     * This is a comment for status
+     */
+    int32 status = 2;
+}

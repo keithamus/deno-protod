@@ -1,0 +1,1 @@
+{ "compilerOptions": { "target": "ES2020", "noEmit": true, "plugins": [{ "name": "typescript-deno-plugin" }] } }
