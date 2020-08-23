@@ -9,6 +9,13 @@ binary](https://github.com/protocolbuffers/protobuf), in that it can be used to
 generate code from the DSL, but this tool is very different in that it is fully
 written in TypeScript, and is designed to only output TypeScript.
 
+To install:
+
+```sh
+# Needs `--allow-read` to be able to read .proto files
+# Needs `--allow-write` to be able to write pb.ts files
+deno install --allow-read --allow-write https://deno.land/x/protod@v0.1.1/protod.ts
+```
 
 ### Potential Questions Asked
 
