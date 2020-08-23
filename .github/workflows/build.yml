@@ -1,0 +1,19 @@
+name: Build
+on: [push, pull_request]
+jobs:
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the project
+      uses: actions/checkout@v2
+    - name: Setup Deno
+      uses: denolib/setup-deno@v2
+      with:
+        deno-version: v1.3.1
+    - name: Fmt
+      run: deno fmt --check
+    - name: Lint
+      run: deno lint --unstable
+    - name: Test
+      run: deno test
