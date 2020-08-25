@@ -47,7 +47,7 @@ for (const proto of protos) {
   testCount += 1;
   Deno.test(base, async () => {
     assertEquals(
-      await generate(`./testdata/${proto}`),
+      await generate(`./testdata/${proto}`, {mod: "../mod.ts"}),
       await Deno.readTextFile(`./testdata/${base}.pb.ts`),
     );
   });

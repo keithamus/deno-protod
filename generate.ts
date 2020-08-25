@@ -54,8 +54,6 @@ const WireTypes: Record<Type, 0 | 1 | 2 | 5> = {
   float: 5,
 };
 
-const thisPackage = `https://deno.land/x/protod@${version}/mod.ts`;
-
 function* getFields(
   message: Message | Oneof,
 ): Generator<Field | Oneof | MapField> {
@@ -134,12 +132,12 @@ function getFieldTypeFn(
   field: Field | Oneof | MapField,
 ): [string, number] {
   if (field instanceof MapField) {
-    proto.imports.from(thisPackage).import("mapField");
+    proto.imports.from(proto.mod).import("mapField");
     if (field.valueType in Type) {
-      proto.imports.from(thisPackage).import(`${field.valueType}Field`);
+      proto.imports.from(proto.mod).import(`${field.valueType}Field`);
       return [`mapField(${field.keyType}Field, ${field.valueType}Field)`, 2];
     } else if (proto.enums.has(field.valueType)) {
-      proto.imports.from(thisPackage).import("enumField");
+      proto.imports.from(proto.mod).import("enumField");
       return [
         `mapField(${field.keyType}Field, enumField(${field.valueType}))`,
         2,
@@ -151,21 +149,21 @@ function getFieldTypeFn(
     let fieldType = "";
     let wireType: number = 0;
     if (proto.enums.has(field.fieldType)) {
-      proto.imports.from(thisPackage).import("enumField");
+      proto.imports.from(proto.mod).import("enumField");
       fieldType = `enumField(${field.fieldType})`;
       wireType = 0;
     } else if (proto.messages.has(field.fieldType)) {
       fieldType = `${field.fieldType}`;
       wireType = 2;
     } else {
-      proto.imports.from(thisPackage).import(`${field.fieldType}Field`);
+      proto.imports.from(proto.mod).import(`${field.fieldType}Field`);
       fieldType = `${field.fieldType}Field`;
       wireType = WireTypes[field.fieldType as Type];
     }
     if (field.repeated) {
       const isPacked = isPackedField(field, proto.syntax);
       const wrapper = isPacked ? "packedField" : "repeatedField";
-      proto.imports.from(thisPackage).import(wrapper);
+      proto.imports.from(proto.mod).import(wrapper);
       fieldType = `${wrapper}(${fieldType})`;
       wireType = isPacked ? 2 : WireTypes[field.fieldType as Type];
     }
@@ -388,7 +386,7 @@ class MessageGenerator {
   private *fromBytesMethod(): Generator<string, void> {
     yield `static fromBytes(bytes: Uint8Array): ${this.message.name} {`;
     yield `  const init: Partial<${this.message.name}> = {};`;
-    this.imports.from(thisPackage).import("deserialize");
+    this.imports.from(this.parent.mod).import("deserialize");
     yield `  for (const entry of deserialize(bytes)) {`;
     let i = 0;
     for (const field of getFields(this.message)) {
@@ -442,7 +440,7 @@ class MessageGenerator {
   }
 
   private *fromJSONMethod() {
-    this.imports.from(thisPackage).import("JSON", "fromJSON");
+    this.imports.from(this.parent.mod).import("JSON", "fromJSON");
     yield `static fromJSON(json: JSON): ${this.message.name} {`;
     yield `  return new ${this.message.name}(fromJSON<${this.message.name}>(json, {`;
     for (const field of getFields(this.message)) {
@@ -463,7 +461,7 @@ class MessageGenerator {
   }
 
   private *toBytesMethod(): Generator<string, void> {
-    this.imports.from(thisPackage).import("toBytes");
+    this.imports.from(this.parent.mod).import("toBytes");
     yield `toBytes(): Uint8Array {`;
     yield `  return toBytes<${this.message.name}>(this, {`;
     for (const field of getFields(this.message)) {
@@ -489,7 +487,7 @@ class MessageGenerator {
   }
 
   private *toJSONMethod(): Generator<string, void> {
-    this.parent.imports.from(thisPackage).import("toJSON");
+    this.parent.imports.from(this.parent.mod).import("toJSON");
     yield `toJSON() {`;
     yield `  return toJSON<${this.message.name}>(this, {`;
     for (const field of getFields(this.message)) {
@@ -535,13 +533,20 @@ class MessageGenerator {
   }
 }
 
+const defaultMod = `https://deno.land/x/protod@${version}/mod.ts`;
+interface ProtoGeneratorOpts {
+  mod?: string
+}
+
 class ProtoGenerator implements Visitor {
   syntax: 2 | 3 = 3;
+  mod: string;
   imports = new ImportMap();
   messages: Map<string, MessageGenerator> = new Map();
   enums: Map<string, EnumGenerator> = new Map();
 
-  constructor(private proto: Proto) {
+  constructor(private proto: Proto, {mod}: ProtoGeneratorOpts = {}) {
+    this.mod = mod || defaultMod
     proto.accept(this);
   }
 
@@ -588,10 +593,10 @@ class ProtoGenerator implements Visitor {
   }
 }
 
-export async function generate(path: string): Promise<string> {
+export async function generate(path: string, opts: ProtoGeneratorOpts = {}): Promise<string> {
   const file = await Deno.open(path, { read: true });
   try {
-    return new ProtoGenerator(await parse(file, { comments: true })).toString();
+    return new ProtoGenerator(await parse(file, {comments: true}), opts).toString();
   } finally {
     file.close();
   }
