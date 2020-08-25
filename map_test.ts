@@ -2,12 +2,12 @@ import { assertEquals } from "https://deno.land/std@0.66.0/testing/asserts.ts";
 import { mapField } from "./map.ts";
 import { int32Field } from "./int32.ts";
 import { stringField } from "./string.ts";
-import { ProtoBufEntry, FieldType } from "./types.ts";
+import { ProtoBufEntry, FieldType, Message } from "./types.ts";
 
 Deno.test("mapField.fromEntry", async () => {
   const tt: [
     ProtoBufEntry,
-    FieldType<unknown>,
+    Exclude<FieldType<unknown>, Message<unknown>>,
     FieldType<unknown>,
     Map<unknown, unknown>,
   ][] = [

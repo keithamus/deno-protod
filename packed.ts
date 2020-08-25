@@ -1,4 +1,4 @@
-import { JSON, FieldType, MetaFieldBuf, ProtoBufEntry } from "./types.ts";
+import { JSON, FieldType, MetaFieldBuf, ProtoBufEntry, Message } from "./types.ts";
 import { concat } from "./concat.ts";
 import { encode, decode } from "./deps.ts";
 
@@ -6,7 +6,7 @@ import { encode, decode } from "./deps.ts";
  * A helper object for Fields that need to use "Packed" encoding.
  */
 export const packedField = <T>(
-  of: FieldType<T>,
+  of: Exclude<FieldType<T>, Message<T>>,
 ): MetaFieldBuf<T[]> => ({
   wireType: 2,
 

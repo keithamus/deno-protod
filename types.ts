@@ -88,19 +88,20 @@ export type FieldType<T> =
   | FieldTypeLengthDelimited<T>
   | FieldType32Bit<T>
   | MetaFieldVarInt<T>
-  | MetaFieldBuf<T>;
+  | MetaFieldBuf<T>
+  | Message<T>;
 
-interface Message<T> {
+export interface Message<T> {
   new (init: Partial<T>): T & MessageInstance;
   fromJSON(json: JSON): T & MessageInstance;
   fromBytes(bytes: Uint8Array): T & MessageInstance;
 }
 
-interface MessageInstance {
+export interface MessageInstance {
   toBytes(): Uint8Array;
   toJSON(): JSON;
 }
 
 export type FieldSet<T> = {
-  [P in keyof T]?: [number, FieldType<T[P]> | Message<T[P]>];
+  [P in keyof T]?: [number, FieldType<T[P]>];
 };

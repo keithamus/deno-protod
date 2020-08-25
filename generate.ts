@@ -124,7 +124,7 @@ function getFieldNativeType(field: Field | Oneof | MapField): string {
   if (isPrimitive(field)) {
     return `${TypeNativeMap[field.fieldType]}${field.repeated ? "[]" : ""}`;
   }
-  return field.fieldType;
+  return `${field.fieldType}${field.repeated ? "[]" : ""}`;
 }
 
 function getFieldTypeFn(
@@ -370,6 +370,8 @@ class MessageGenerator {
           i += 1;
         }
         yield "  }";
+      } else if (field.repeated) {
+        yield `  this.${name} = init.${name} ?? [];`;
       } else if (this.parent.messages.has(field.fieldType)) {
         yield `  this.${name} = init.${name} ?? new ${field.fieldType}({});`;
       } else if (this.parent.enums.has(field.fieldType)) {

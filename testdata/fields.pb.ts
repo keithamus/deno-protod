@@ -88,6 +88,7 @@ export class Fields {
   u: bigint[];
   v: boolean[];
   w: string[];
+  x: Sub[];
   #y: string | void = undefined;
   get y(): string | void {
     return this.#y;
@@ -129,6 +130,7 @@ export class Fields {
     this.u = init.u ?? [];
     this.v = init.v ?? [];
     this.w = init.w ?? [];
+    this.x = init.x ?? [];
     if ("y" in init) {
       this.y = init.y ?? undefined;
     } else if ("z" in init) {
@@ -160,6 +162,7 @@ export class Fields {
     u: [21, packedField(uint64Field)],
     v: [22, packedField(boolField)],
     w: [23, repeatedField(stringField)],
+    x: [24, repeatedField(Sub)],
     y: [25, stringField],
     z: [26, int32Field],
   }

@@ -36,7 +36,8 @@ message Fields {
   repeated uint64 u = 21;
   repeated bool v = 22;
   repeated string w = 23;
-  oneof x {
+  repeated Sub x = 24;
+  oneof yorz {
     string y = 25;
     int32 z = 26;
   }
