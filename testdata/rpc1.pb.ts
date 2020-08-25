@@ -11,7 +11,7 @@ import {
   stringField,
   toBytes,
   toJSON,
-} from "https://deno.land/x/protod@0.1.0/mod.ts";
+} from "../mod.ts";
 
 /**
  * This is a comment for MyRequest

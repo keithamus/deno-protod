@@ -23,7 +23,7 @@ import {
   toJSON,
   uint32Field,
   uint64Field,
-} from "https://deno.land/x/protod@0.1.0/mod.ts";
+} from "../mod.ts";
 
 export enum Enum {
   a = 0,
