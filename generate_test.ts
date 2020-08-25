@@ -6,7 +6,6 @@ import {
   runBenchmarks,
   bench,
   BenchmarkTimer,
-  BenchmarkResult,
 } from "https://deno.land/std@0.66.0/testing/bench.ts";
 
 interface Proto {
@@ -17,12 +16,6 @@ interface ProtoS {
   name: string;
   fromBytes(b: Uint8Array): Proto;
   fromJSON(j: NonNullable<JSON>): Proto;
-}
-
-function stripUndef(obj: NonNullable<JSON>): JSON {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([_, v]) => v !== undefined),
-  );
 }
 
 const pbs = new Map();
@@ -74,8 +67,8 @@ for (const messageTest of messageTests) {
     );
     const reqB = Class!.fromBytes(bin);
     const reqJ = Class!.fromJSON(json);
-    const reqBJson = stripUndef(reqB.toJSON());
-    const reqJJson = stripUndef(reqJ.toJSON());
+    const reqBJson = reqB.toJSON();
+    const reqJJson = reqJ.toJSON();
     assertEquals(reqJJson, json);
     assertEquals(reqBJson, reqJJson);
     assertEquals(JSON.parse(JSON.stringify(reqBJson)), reqBJson);

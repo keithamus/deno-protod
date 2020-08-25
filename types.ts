@@ -22,6 +22,10 @@ export type JSON =
   | null
   | undefined;
 
+export type Field =
+  | "string"
+  | "int32";
+
 export interface FieldTypeVarint<T> {
   wireType: 0;
   fromBytes(value: bigint): T;
@@ -60,6 +64,7 @@ export interface MetaFieldVarInt<T> {
   fromJSON(value: NonNullable<JSON>): T;
   toJSON(value: T): NonNullable<JSON>;
   toBytes(): never;
+  fromEntry(entries: ProtoBufEntry[]): T;
   toEntry(id: number, value: T): ProtoBufEntry[];
 }
 
@@ -69,6 +74,7 @@ export interface MetaFieldBuf<T> {
   fromJSON(value: NonNullable<JSON>): T;
   toJSON(value: T): NonNullable<JSON>;
   toBytes(): never;
+  fromEntry(entries: ProtoBufEntry[]): T;
   toEntry(id: number, value: T): ProtoBufEntry[];
 }
 
@@ -83,3 +89,18 @@ export type FieldType<T> =
   | FieldType32Bit<T>
   | MetaFieldVarInt<T>
   | MetaFieldBuf<T>;
+
+interface Message<T> {
+  new (init: Partial<T>): T & MessageInstance;
+  fromJSON(json: JSON): T & MessageInstance;
+  fromBytes(bytes: Uint8Array): T & MessageInstance;
+}
+
+interface MessageInstance {
+  toBytes(): Uint8Array;
+  toJSON(): JSON;
+}
+
+export type FieldSet<T> = {
+  [P in keyof T]?: [number, FieldType<T[P]> | Message<T[P]>];
+};

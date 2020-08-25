@@ -1,6 +1,6 @@
 export { serialize } from "./serialize.ts";
 export { deserialize } from "./deserialize.ts";
-export type { ProtoBufEntry, JSON, FieldType } from "./types.ts";
+export type { ProtoBufEntry, JSON, FieldType, FieldSet } from "./types.ts";
 
 export { int32Field } from "./int32.ts";
 export { int64Field } from "./int64.ts";
@@ -24,5 +24,6 @@ export { packedField } from "./packed.ts";
 export { mapField } from "./map.ts";
 
 export { fromJSON } from "./from_json.ts";
+export { fromBytes } from "./from_bytes.ts";
 export { toJSON } from "./to_json.ts";
 export { toBytes } from "./to_bytes.ts";

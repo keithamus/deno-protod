@@ -383,130 +383,54 @@ class MessageGenerator {
     yield `}`;
   }
 
-  private *fromBytesMethod(): Generator<string, void> {
-    yield `static fromBytes(bytes: Uint8Array): ${this.message.name} {`;
-    yield `  const init: Partial<${this.message.name}> = {};`;
-    this.imports.from(this.parent.mod).import("deserialize");
-    yield `  for (const entry of deserialize(bytes)) {`;
-    let i = 0;
+  private *fieldsField(): Generator<string, void> {
+    this.imports.from(this.parent.mod).import("FieldSet");
+    yield `static fields: FieldSet<${this.message.name}> = {`;
     for (const field of getFields(this.message)) {
-      let [type, wireType] = getFieldTypeFn(this.parent, field);
       if (field instanceof Oneof) {
         for (const subField of getFields(field)) {
-          const id = (subField as Field).id;
-          const [type, wireType] = getFieldTypeFn(this.parent, subField);
-          if (i === 0) {
-            yield `    if (entry[0] === ${id} && entry[1] === ${wireType}) {`;
-          } else {
-            yield `    } else if (entry[0] === ${id} && entry[1] === ${wireType}) {`;
-          }
-          yield `      init.${subField.name} = ${type}.fromBytes(entry[2]);`;
+          yield `  ${subField.name}: [${(subField as Field).id}, ${
+            getFieldTypeFn(this.parent, subField)[0]
+          }],`;
         }
       } else {
-        if (
-          field instanceof Field && isPackedField(field, this.parent.syntax)
-        ) {
-          wireType = 2;
-        }
-        if (i === 0) {
-          yield `    if (entry[0] === ${field.id} && entry[1] === ${wireType}) {`;
-        } else {
-          yield `    } else if (entry[0] === ${field.id} && entry[1] === ${wireType}) {`;
-        }
-        if (field instanceof MapField) {
-          yield `      const map = (init.${field.name} = init.${field.name} || new Map());`;
-          yield `      ${type}`;
-          yield `        .fromBytes(entry[2])`;
-          yield `        .forEach((v, k) => map.set(k, v));`;
-        } else {
-          if (field.repeated) {
-            yield `      init.${field.name} = init.${field.name} || [];`;
-            if (isPackedField(field, this.parent.syntax)) {
-              yield `      init.${field.name}.push(...${type}.fromBytes(entry[2]));`;
-            } else {
-              yield `      init.${field.name}.push(${field.fieldType}Field.fromBytes(entry[2]));`;
-            }
-          } else {
-            yield `      init.${field.name} = ${type}.fromBytes(entry[2]);`;
-          }
-        }
+        yield `  ${field.name}: [${field.id}, ${
+          getFieldTypeFn(this.parent, field)[0]
+        }],`;
       }
-      i += 1;
     }
-    yield `    }`;
-    yield `  }`;
-    yield `  return new ${this.message.name}(init);`;
+    yield `}`;
+  }
+
+  private *fromBytesMethod(): Generator<string, void> {
+    yield `static fromBytes(bytes: Uint8Array): ${this.message.name} {`;
+    this.imports.from(this.parent.mod).import("fromBytes");
+    yield `  return new ${this.message.name}(`;
+    yield `    fromBytes<${this.message.name}>(bytes, ${this.message.name}.fields)`;
+    yield `  );`;
     yield `}`;
   }
 
   private *fromJSONMethod() {
     this.imports.from(this.parent.mod).import("JSON", "fromJSON");
     yield `static fromJSON(json: JSON): ${this.message.name} {`;
-    yield `  return new ${this.message.name}(fromJSON<${this.message.name}>(json, {`;
-    for (const field of getFields(this.message)) {
-      if (field instanceof MapField) {
-        yield `    ${field.name}: ${getFieldTypeFn(this.parent, field)[0]},`;
-      } else if (field instanceof Oneof) {
-        for (const subField of getFields(field)) {
-          yield `    ${subField.name}: ${
-            getFieldTypeFn(this.parent, subField)[0]
-          },`;
-        }
-      } else {
-        yield `    ${field.name}: ${getFieldTypeFn(this.parent, field)[0]},`;
-      }
-    }
-    yield `  }));`;
+    yield `  return new ${this.message.name}(`;
+    yield `    fromJSON<${this.message.name}>(json, ${this.message.name}.fields)`;
+    yield `  );`;
     yield `}`;
   }
 
   private *toBytesMethod(): Generator<string, void> {
     this.imports.from(this.parent.mod).import("toBytes");
     yield `toBytes(): Uint8Array {`;
-    yield `  return toBytes<${this.message.name}>(this, {`;
-    for (const field of getFields(this.message)) {
-      if (field instanceof Oneof) {
-        for (const subField of getFields(field)) {
-          const id = (subField as Field).id;
-          yield `    ${subField.name}: [${id}, ${
-            getFieldTypeFn(this.parent, subField)[0]
-          }],`;
-        }
-      } else if (
-        field instanceof Field && this.parent.messages.has(field.fieldType)
-      ) {
-        yield `    ${field.name}: [${field.id}, this.${field.name}],`;
-      } else {
-        yield `    ${field.name}: [${field.id}, ${
-          getFieldTypeFn(this.parent, field)[0]
-        }],`;
-      }
-    }
-    yield `  });`;
+    yield `  return toBytes<${this.message.name}>(this, ${this.message.name}.fields);`;
     yield `}`;
   }
 
   private *toJSONMethod(): Generator<string, void> {
     this.parent.imports.from(this.parent.mod).import("toJSON");
     yield `toJSON() {`;
-    yield `  return toJSON<${this.message.name}>(this, {`;
-    for (const field of getFields(this.message)) {
-      if (field instanceof Oneof) {
-        for (const subField of getFields(field)) {
-          const id = (subField as Field).id;
-          yield `    ${subField.name}: ${
-            getFieldTypeFn(this.parent, subField)[0]
-          },`;
-        }
-      } else if (
-        field instanceof Field && this.parent.messages.has(field.fieldType)
-      ) {
-        yield `    ${field.name}: this.${field.name},`;
-      } else {
-        yield `    ${field.name}: ${getFieldTypeFn(this.parent, field)[0]},`;
-      }
-    }
-    yield `  });`;
+    yield `  return toJSON<${this.message.name}>(this, ${this.message.name}.fields);`;
     yield `}`;
   }
 
@@ -517,6 +441,8 @@ class MessageGenerator {
     for (const line of this.classGetters()) yield `  ${line}`;
     yield "";
     for (const line of this.classConstructor()) yield `  ${line}`;
+    yield "";
+    for (const line of this.fieldsField()) yield `  ${line}`;
     yield "";
     for (const line of this.fromBytesMethod()) yield `  ${line}`;
     yield "";

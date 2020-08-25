@@ -32,7 +32,19 @@ export const repeatedField = <T>(of: FieldType<T>): MetaFieldBuf<T[]> => ({
     return value.map((value) => of.toJSON(value));
   },
 
-  toEntry<N extends number>(id: N, value: T[]): ProtoBufEntry[] {
+  fromEntry(entries: ProtoBufEntry[]): T[] {
+    const ret: T[] = [];
+    for (const entry of entries) {
+      if (entry[1] === 0 && of.wireType === 0) {
+        ret.push(of.fromBytes(entry[2]));
+      } else if (entry[1] !== 0 && of.wireType === entry[1]) {
+        ret.push(of.fromBytes(entry[2]));
+      }
+    }
+    return ret;
+  },
+
+  toEntry(id: number, value: T[]): ProtoBufEntry[] {
     return value.map((val) =>
       [id, of.wireType, of.toBytes(val)] as ProtoBufEntry
     );
