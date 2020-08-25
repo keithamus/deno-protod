@@ -16,4 +16,4 @@ jobs:
     - name: Lint
       run: deno lint --unstable
     - name: Test
-      run: deno test
+      run: deno test --allow-read
