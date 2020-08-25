@@ -589,7 +589,7 @@ class ProtoGenerator implements Visitor {
   }
 
   toString(): string {
-    return [...this].join("\n");
+    return [...this].join("\n") + "\n";
   }
 }
 
