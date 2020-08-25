@@ -3,7 +3,7 @@ import {
   assertThrows,
 } from "https://deno.land/std@0.66.0/testing/asserts.ts";
 import { stringField } from "./string.ts";
-import {JSON} from "./types.ts";
+import { JSON } from "./types.ts";
 
 Deno.test("stringField.fromBytes", async () => {
   const tt: [Uint8Array, string][] = [

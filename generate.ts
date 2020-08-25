@@ -535,7 +535,7 @@ class MessageGenerator {
 
 const defaultMod = `https://deno.land/x/protod@${version}/mod.ts`;
 interface ProtoGeneratorOpts {
-  mod?: string
+  mod?: string;
 }
 
 class ProtoGenerator implements Visitor {
@@ -545,8 +545,8 @@ class ProtoGenerator implements Visitor {
   messages: Map<string, MessageGenerator> = new Map();
   enums: Map<string, EnumGenerator> = new Map();
 
-  constructor(private proto: Proto, {mod}: ProtoGeneratorOpts = {}) {
-    this.mod = mod || defaultMod
+  constructor(private proto: Proto, { mod }: ProtoGeneratorOpts = {}) {
+    this.mod = mod || defaultMod;
     proto.accept(this);
   }
 
@@ -593,10 +593,14 @@ class ProtoGenerator implements Visitor {
   }
 }
 
-export async function generate(path: string, opts: ProtoGeneratorOpts = {}): Promise<string> {
+export async function generate(
+  path: string,
+  opts: ProtoGeneratorOpts = {},
+): Promise<string> {
   const file = await Deno.open(path, { read: true });
   try {
-    return new ProtoGenerator(await parse(file, {comments: true}), opts).toString();
+    return new ProtoGenerator(await parse(file, { comments: true }), opts)
+      .toString();
   } finally {
     file.close();
   }

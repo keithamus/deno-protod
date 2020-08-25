@@ -1,11 +1,16 @@
 import { assertEquals } from "https://deno.land/std@0.66.0/testing/asserts.ts";
 import { mapField } from "./map.ts";
 import { int32Field } from "./int32.ts";
-import {stringField} from "./string.ts";
-import {FieldType} from "./types.ts";
+import { stringField } from "./string.ts";
+import { FieldType } from "./types.ts";
 
 Deno.test("mapField.fromBytes", async () => {
-  const tt: [Uint8Array, FieldType<unknown>, FieldType<unknown>, Map<unknown, unknown>][] = [
+  const tt: [
+    Uint8Array,
+    FieldType<unknown>,
+    FieldType<unknown>,
+    Map<unknown, unknown>,
+  ][] = [
     [
       Uint8Array.of(
         ...[0x08, 0x81, 0x80, 0x80, 0x80, 0xf8, 0xff, 0xff, 0xff, 0xff, 0x01],
