@@ -4,6 +4,7 @@ import { JSON, FieldType, ProtoBufEntry, MetaFieldBuf, MessageInstance, Message 
  * A helper object for Fields that are "Repeated" (not "Packed").
  */
 export const repeatedField = <T>(of: FieldType<T>): MetaFieldBuf<T[]> => ({
+  name: 'repeated',
   wireType: 2,
 
   fromBytes(): never {

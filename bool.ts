@@ -4,6 +4,7 @@ import { JSON, FieldTypeVarint } from "./types.ts";
  * A helper object for ProtoBuf boolean fields.
  */
 export const boolField: FieldTypeVarint<boolean> = {
+  name: 'bool',
   wireType: 0,
 
   fromBytes(value: bigint): boolean {

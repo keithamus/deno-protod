@@ -8,6 +8,7 @@ import { encode, decode } from "./deps.ts";
 export const packedField = <T>(
   of: Exclude<FieldType<T>, Message<T>>,
 ): MetaFieldBuf<T[]> => ({
+  name: 'packed',
   wireType: 2,
 
   toBytes(): never {

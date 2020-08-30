@@ -16,6 +16,7 @@ export const mapField = <K, V>(
   keyFn: Exclude<FieldType<K>, Message<K>>,
   valueFn: FieldType<V>,
 ): MetaFieldBuf<Map<K, V>> => ({
+  name: 'map',
   wireType: 2,
 
   toBytes(): never {

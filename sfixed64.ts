@@ -4,6 +4,7 @@ import { JSON, FieldType64Bit } from "./types.ts";
  * A helper object for ProtoBuf Signed Fixed32 fields.
  */
 export const sfixed64Field: FieldType64Bit<bigint> = {
+  name: 'sfixed64',
   wireType: 1,
 
   fromBytes(value: Uint8Array): bigint {

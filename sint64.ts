@@ -4,6 +4,7 @@ import { JSON, FieldTypeVarint } from "./types.ts";
  * A helper object for ProtoBuf Signed (ZigZag encoded) Int64 Fields.
  */
 export const sint64Field: FieldTypeVarint<bigint> = {
+  name: 'sint64',
   wireType: 0,
 
   fromBytes(value: bigint): bigint {

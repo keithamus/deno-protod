@@ -4,6 +4,7 @@ import { JSON, FieldTypeVarint } from "./types.ts";
  * A helper object for ProtoBuf Int32 fields.
  */
 export const int32Field: FieldTypeVarint<number> = {
+  name: 'int32',
   wireType: 0,
 
   fromBytes(value: bigint): number {

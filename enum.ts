@@ -4,6 +4,7 @@ import { JSON, FieldTypeVarint } from "./types.ts";
  * A helper object for ProtoBuf Enum fields.
  */
 export const enumField = <T>(Enum: T): FieldTypeVarint<T[keyof T]> => ({
+  name: 'enum',
   wireType: 0,
 
   fromBytes(value: bigint): T[keyof T] {

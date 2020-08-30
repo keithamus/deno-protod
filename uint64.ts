@@ -4,6 +4,7 @@ import { JSON, FieldTypeVarint } from "./types.ts";
  * A helper object for ProtoBuf Unsigned Uint32 Fields.
  */
 export const uint64Field: FieldTypeVarint<bigint> = {
+  name: 'uint64',
   wireType: 0,
 
   fromBytes(value: bigint): bigint {

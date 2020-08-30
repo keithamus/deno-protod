@@ -4,6 +4,7 @@ import { JSON, FieldTypeVarint } from "./types.ts";
  * A helper object for ProtoBuf Int64 fields.
  */
 export const int64Field: FieldTypeVarint<bigint> = {
+  name: 'int64',
   wireType: 0,
 
   fromBytes(value: bigint): bigint {

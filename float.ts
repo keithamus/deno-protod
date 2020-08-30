@@ -4,6 +4,7 @@ import { JSON, FieldType32Bit } from "./types.ts";
  * A helper object for ProtoBuf Float fields.
  */
 export const floatField: FieldType32Bit<number> = {
+  name: 'float',
   wireType: 5,
 
   fromBytes(value: Uint8Array): number {

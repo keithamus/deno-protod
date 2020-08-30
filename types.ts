@@ -27,6 +27,7 @@ export type Field =
   | "int32";
 
 export interface FieldTypeVarint<T> {
+  name: string;
   wireType: 0;
   fromBytes(value: bigint): T;
   fromJSON(value: NonNullable<JSON>): T;
@@ -35,6 +36,7 @@ export interface FieldTypeVarint<T> {
 }
 
 export interface FieldType64Bit<T> {
+  name: string;
   wireType: 1;
   fromBytes(value: Uint8Array): T;
   fromJSON(value: NonNullable<JSON>): T;
@@ -43,6 +45,7 @@ export interface FieldType64Bit<T> {
 }
 
 export interface FieldTypeLengthDelimited<T> {
+  name: string;
   wireType: 2;
   fromBytes(value: Uint8Array): T;
   fromJSON(value: NonNullable<JSON>): T;
@@ -51,6 +54,7 @@ export interface FieldTypeLengthDelimited<T> {
 }
 
 export interface FieldType32Bit<T> {
+  name: string;
   wireType: 5;
   fromBytes(value: Uint8Array): T;
   fromJSON(value: NonNullable<JSON>): T;
@@ -59,6 +63,7 @@ export interface FieldType32Bit<T> {
 }
 
 export interface MetaFieldVarInt<T> {
+  name: string;
   wireType: 0;
   fromBytes(value: bigint): T;
   fromJSON(value: NonNullable<JSON>): T;
@@ -69,6 +74,7 @@ export interface MetaFieldVarInt<T> {
 }
 
 export interface MetaFieldBuf<T> {
+  name: string;
   wireType: 2;
   fromBytes(value: Uint8Array): T;
   fromJSON(value: NonNullable<JSON>): T;

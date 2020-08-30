@@ -4,6 +4,7 @@ import { JSON, FieldTypeLengthDelimited } from "./types.ts";
  * A helper object for ProtoBuf Bytes fields.
  */
 export const bytesField: FieldTypeLengthDelimited<Uint8Array> = {
+  name: 'bytes',
   wireType: 2,
 
   fromBytes(value: Uint8Array): Uint8Array {
