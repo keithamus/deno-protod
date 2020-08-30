@@ -16,7 +16,7 @@ export const mapField = <K, V>(
   keyFn: Exclude<FieldType<K>, Message<K>>,
   valueFn: FieldType<V>,
 ): MetaFieldBuf<Map<K, V>> => ({
-  name: 'map',
+  name: "map",
   wireType: 2,
 
   toBytes(): never {
@@ -88,7 +88,11 @@ export const mapField = <K, V>(
       if ("wireType" in valueFn) {
         value = [2, valueFn.wireType, valueFn.toBytes(v)] as ProtoBufEntry;
       } else {
-        value = [2, 2, (v as unknown as MessageInstance).toBytes()] as ProtoBufEntry;
+        value = [
+          2,
+          2,
+          (v as unknown as MessageInstance).toBytes(),
+        ] as ProtoBufEntry;
       }
       entries.push([
         id,

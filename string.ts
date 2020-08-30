@@ -4,7 +4,7 @@ import { JSON, FieldTypeLengthDelimited } from "./types.ts";
  * A helper object for ProtoBuf String Fields.
  */
 export const stringField: FieldTypeLengthDelimited<string> = {
-  name: 'string',
+  name: "string",
   wireType: 2,
 
   fromBytes(value: Uint8Array): string {

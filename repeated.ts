@@ -1,10 +1,17 @@
-import { JSON, FieldType, ProtoBufEntry, MetaFieldBuf, MessageInstance, Message } from "./types.ts";
+import {
+  JSON,
+  FieldType,
+  ProtoBufEntry,
+  MetaFieldBuf,
+  MessageInstance,
+  Message,
+} from "./types.ts";
 
 /**
  * A helper object for Fields that are "Repeated" (not "Packed").
  */
 export const repeatedField = <T>(of: FieldType<T>): MetaFieldBuf<T[]> => ({
-  name: 'repeated',
+  name: "repeated",
   wireType: 2,
 
   fromBytes(): never {
@@ -31,8 +38,8 @@ export const repeatedField = <T>(of: FieldType<T>): MetaFieldBuf<T[]> => ({
   },
   toJSON(value: T[]): NonNullable<JSON> {
     return value.map((value) => {
-      if ("toJSON" in of) return of.toJSON(value)
-      return (value as unknown as MessageInstance).toJSON()
+      if ("toJSON" in of) return of.toJSON(value);
+      return (value as unknown as MessageInstance).toJSON();
     });
   },
 
@@ -46,7 +53,7 @@ export const repeatedField = <T>(of: FieldType<T>): MetaFieldBuf<T[]> => ({
           ret.push(of.fromBytes(entry[2]));
         }
       } else if (entry[1] !== 0) {
-        ret.push((of as Message<T>).fromBytes(entry[2]))
+        ret.push((of as Message<T>).fromBytes(entry[2]));
       }
     }
     return ret;
@@ -55,9 +62,9 @@ export const repeatedField = <T>(of: FieldType<T>): MetaFieldBuf<T[]> => ({
   toEntry(id: number, value: T[]): ProtoBufEntry[] {
     return value.map((val) => {
       if ("wireType" in of) {
-        return [id, of.wireType, of.toBytes(val)] as ProtoBufEntry
+        return [id, of.wireType, of.toBytes(val)] as ProtoBufEntry;
       }
-      return [id, 2, (val as unknown as MessageInstance).toBytes()]
+      return [id, 2, (val as unknown as MessageInstance).toBytes()];
     });
   },
 });

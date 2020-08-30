@@ -4,7 +4,7 @@ import { JSON, FieldType64Bit } from "./types.ts";
  * A helper object for ProtoBuf Fixed64 fields.
  */
 export const fixed64Field: FieldType64Bit<bigint> = {
-  name: 'fixed64',
+  name: "fixed64",
   wireType: 1,
 
   fromBytes(value: Uint8Array): bigint {

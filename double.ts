@@ -4,7 +4,7 @@ import { JSON, FieldType64Bit } from "./types.ts";
  * A helper object for ProtoBuf Double fields (aka JavaScript Numbers).
  */
 export const doubleField: FieldType64Bit<number> = {
-  name: 'double',
+  name: "double",
   wireType: 1,
 
   fromBytes(value: Uint8Array): number {

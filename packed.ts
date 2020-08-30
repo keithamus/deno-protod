@@ -1,4 +1,10 @@
-import { JSON, FieldType, MetaFieldBuf, ProtoBufEntry, Message } from "./types.ts";
+import {
+  JSON,
+  FieldType,
+  MetaFieldBuf,
+  ProtoBufEntry,
+  Message,
+} from "./types.ts";
 import { concat } from "./concat.ts";
 import { encode, decode } from "./deps.ts";
 
@@ -8,7 +14,7 @@ import { encode, decode } from "./deps.ts";
 export const packedField = <T>(
   of: Exclude<FieldType<T>, Message<T>>,
 ): MetaFieldBuf<T[]> => ({
-  name: 'packed',
+  name: "packed",
   wireType: 2,
 
   toBytes(): never {

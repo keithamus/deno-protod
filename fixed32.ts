@@ -4,7 +4,7 @@ import { JSON, FieldType32Bit } from "./types.ts";
  * A helper object for ProtoBuf Fixed32 fields.
  */
 export const fixed32Field: FieldType32Bit<number> = {
-  name: 'fixed32',
+  name: "fixed32",
   wireType: 5,
 
   fromBytes(value: Uint8Array): number {

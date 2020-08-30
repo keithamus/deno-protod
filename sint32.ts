@@ -4,7 +4,7 @@ import { JSON, FieldTypeVarint } from "./types.ts";
  * A helper object for ProtoBuf Signed (ZigZag encoded) Int32 Fields.
  */
 export const sint32Field: FieldTypeVarint<number> = {
-  name: 'sint32',
+  name: "sint32",
   wireType: 0,
 
   fromBytes(value: bigint): number {
