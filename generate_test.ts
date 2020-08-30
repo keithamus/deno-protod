@@ -28,7 +28,6 @@ for await (const { isFile, name } of Deno.readDir("./testdata")) {
   } else if (name.endsWith(".msg.json")) {
     messageTests.add(name);
   } else if (name.endsWith(".pb.ts")) {
-    console.log(">>>", name);
     pbs.set(name, await import(`./testdata/${name}`));
   }
 }
@@ -40,8 +39,10 @@ for (const proto of protos) {
   testCount += 1;
   Deno.test(base, async () => {
     assertEquals(
-      await generate(`./testdata/${proto}`, { mod: "../mod.ts" }),
-      await Deno.readTextFile(`./testdata/${base}.pb.ts`),
+      (await generate(`./testdata/${proto}`, { mod: "../mod.ts" })).trim()
+        .split("\n").slice(1),
+      (await Deno.readTextFile(`./testdata/${base}.pb.ts`)).trim().split("\n")
+        .slice(1),
     );
   });
 }

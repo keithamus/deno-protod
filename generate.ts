@@ -401,14 +401,14 @@ class MessageGenerator {
         }],`;
       }
     }
-    yield `}`;
+    yield `};`;
   }
 
   private *fromBytesMethod(): Generator<string, void> {
     yield `static fromBytes(bytes: Uint8Array): ${this.message.name} {`;
     this.imports.from(this.parent.mod).import("fromBytes");
     yield `  return new ${this.message.name}(`;
-    yield `    fromBytes<${this.message.name}>(bytes, ${this.message.name}.fields)`;
+    yield `    fromBytes<${this.message.name}>(bytes, ${this.message.name}.fields),`;
     yield `  );`;
     yield `}`;
   }
@@ -417,7 +417,7 @@ class MessageGenerator {
     this.imports.from(this.parent.mod).import("JSON", "fromJSON");
     yield `static fromJSON(json: JSON): ${this.message.name} {`;
     yield `  return new ${this.message.name}(`;
-    yield `    fromJSON<${this.message.name}>(json, ${this.message.name}.fields)`;
+    yield `    fromJSON<${this.message.name}>(json, ${this.message.name}.fields),`;
     yield `  );`;
     yield `}`;
   }

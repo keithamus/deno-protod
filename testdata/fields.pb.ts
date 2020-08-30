@@ -41,17 +41,17 @@ export class Sub {
 
   static fields: FieldSet<Sub> = {
     a: [1, stringField],
-  }
+  };
 
   static fromBytes(bytes: Uint8Array): Sub {
     return new Sub(
-      fromBytes<Sub>(bytes, Sub.fields)
+      fromBytes<Sub>(bytes, Sub.fields),
     );
   }
 
   static fromJSON(json: JSON): Sub {
     return new Sub(
-      fromJSON<Sub>(json, Sub.fields)
+      fromJSON<Sub>(json, Sub.fields),
     );
   }
 
@@ -165,17 +165,17 @@ export class Fields {
     x: [24, repeatedField(Sub)],
     y: [25, stringField],
     z: [26, int32Field],
-  }
+  };
 
   static fromBytes(bytes: Uint8Array): Fields {
     return new Fields(
-      fromBytes<Fields>(bytes, Fields.fields)
+      fromBytes<Fields>(bytes, Fields.fields),
     );
   }
 
   static fromJSON(json: JSON): Fields {
     return new Fields(
-      fromJSON<Fields>(json, Fields.fields)
+      fromJSON<Fields>(json, Fields.fields),
     );
   }
 
@@ -187,4 +187,3 @@ export class Fields {
     return toJSON<Fields>(this, Fields.fields);
   }
 }
-

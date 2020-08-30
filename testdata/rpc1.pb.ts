@@ -29,17 +29,17 @@ export class MyRequest {
 
   static fields: FieldSet<MyRequest> = {
     path: [1, stringField],
-  }
+  };
 
   static fromBytes(bytes: Uint8Array): MyRequest {
     return new MyRequest(
-      fromBytes<MyRequest>(bytes, MyRequest.fields)
+      fromBytes<MyRequest>(bytes, MyRequest.fields),
     );
   }
 
   static fromJSON(json: JSON): MyRequest {
     return new MyRequest(
-      fromJSON<MyRequest>(json, MyRequest.fields)
+      fromJSON<MyRequest>(json, MyRequest.fields),
     );
   }
 
@@ -67,17 +67,17 @@ export class MyResponse {
 
   static fields: FieldSet<MyResponse> = {
     status: [2, int32Field],
-  }
+  };
 
   static fromBytes(bytes: Uint8Array): MyResponse {
     return new MyResponse(
-      fromBytes<MyResponse>(bytes, MyResponse.fields)
+      fromBytes<MyResponse>(bytes, MyResponse.fields),
     );
   }
 
   static fromJSON(json: JSON): MyResponse {
     return new MyResponse(
-      fromJSON<MyResponse>(json, MyResponse.fields)
+      fromJSON<MyResponse>(json, MyResponse.fields),
     );
   }
 
@@ -89,4 +89,3 @@ export class MyResponse {
     return toJSON<MyResponse>(this, MyResponse.fields);
   }
 }
-
