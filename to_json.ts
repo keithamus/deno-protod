@@ -1,4 +1,4 @@
-import type { JSON, FieldSet } from "./types.ts";
+import type { JSON, FieldSet, MessageInstance } from "./types.ts";
 
 type JSONAble<T> = {
   [P in keyof T]?: JSON;
@@ -17,7 +17,7 @@ export function toJSON<T>(fields: T, set: FieldSet<T>): JSONAble<T> {
       const value = field.toJSON(fields[key]);
       if (value !== undefined) json[key] = value;
     } else if ("toJSON" in fields[key]) {
-      json[key] = (fields[key] as any).toJSON();
+      json[key] = (fields[key] as unknown as MessageInstance).toJSON();
     }
   }
   return json;

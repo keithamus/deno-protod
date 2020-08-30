@@ -41,7 +41,7 @@ export const mapField = <K, V>(
       let value;
       if ("toJSON" in valueFn) {
         value = valueFn.toJSON(entry[1]);
-      } else if ("toJSON" in valueFn) {
+      } else if ("toJSON" in entry[1]) {
         value = (entry[1] as unknown as MessageInstance).toJSON();
       }
       out[String(keyFn.toJSON(entry[0]))] = value;

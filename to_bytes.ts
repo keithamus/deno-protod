@@ -1,4 +1,4 @@
-import type { FieldType, ProtoBufEntry, FieldSet } from "./types.ts";
+import type { MessageInstance, ProtoBufEntry, FieldSet } from "./types.ts";
 import { serialize } from "./serialize.ts";
 
 /**
@@ -17,7 +17,7 @@ export function toBytes<T>(fields: T, set: FieldSet<T>): Uint8Array {
     } else if ("wireType" in field && "toBytes" in field) {
       values.push([id, field.wireType, field.toBytes(val)] as ProtoBufEntry);
     } else if (fields[key] instanceof field) {
-      const message = fields[key] as any;
+      const message = (fields[key] as unknown as MessageInstance);
       values.push([id, 2, message.toBytes()]);
     }
   }
