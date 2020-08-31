@@ -3,6 +3,7 @@ import { version } from "./version.ts";
 import {
   Proto,
   Visitor,
+  Import,
   Enum,
   EnumField,
   Message,
@@ -12,6 +13,8 @@ import {
   Syntax,
   Option,
   parse,
+  dirname,
+  join,
 } from "./deps.ts";
 
 enum Type {
@@ -155,10 +158,29 @@ function getFieldTypeFn(
     } else if (proto.messages.has(field.fieldType)) {
       fieldType = `${field.fieldType}`;
       wireType = 2;
-    } else {
+    } else if (field.fieldType in Type) {
       proto.imports.from(proto.mod).import(`${field.fieldType}Field`);
       fieldType = `${field.fieldType}Field`;
       wireType = WireTypes[field.fieldType as Type];
+    } else if (proto.scopedEnums) {
+      let mod = null;
+      fieldType = field.fieldType;
+      for (const [source, idents] of proto.scopedEnums) {
+        if (idents.has(fieldType)) {
+          mod = source;
+          break;
+        }
+      }
+      if (!mod) {
+        for (const [source, idents] of proto.scopedMessages) {
+          if (idents.has(fieldType)) {
+            mod = source;
+            break;
+          }
+        }
+      }
+      proto.imports.from(mod || "./deps.ts").import(fieldType);
+      wireType = 2;
     }
     if (field.repeated) {
       const isPacked = isPackedField(field, proto.syntax);
@@ -183,13 +205,6 @@ function getDefaultValue(field: Field | Oneof | MapField): string {
   if (field.repeated) {
     return "[]";
   }
-  // if (generator.enums.has(id)) {
-  //   if (generator.enumDefaults.has(id)) {
-  //     return `${id}.${generator.enumDefaults.get(id)}`;
-  //   }
-  //   return `0 as ${id}`;
-  // }
-  // if (generator.messages.has(id)) return `new ${id}({})`;
   switch (id) {
     case "int32":
       return "0";
@@ -226,7 +241,7 @@ function getDefaultValue(field: Field | Oneof | MapField): string {
     case "float":
       return "0";
     default:
-      return id;
+      return `new ${id}({})`;
   }
 }
 
@@ -354,8 +369,8 @@ class MessageGenerator {
 
   private *classConstructor(): Generator<string, void> {
     if (!this.message.body.length) {
-      yield `constructor() {}`
-      return
+      yield `constructor() {}`;
+      return;
     }
     yield `constructor(init: Partial<${this.message.name}>) {`;
     for (const field of getFields(this.message)) {
@@ -391,8 +406,8 @@ class MessageGenerator {
 
   private *fieldsField(): Generator<string, void> {
     if (!this.message.body.length) {
-      yield `static fields = {};`
-      return
+      yield `static fields = {};`;
+      return;
     }
     this.imports.from(this.parent.mod).import("FieldSet");
     yield `static fields: FieldSet<${this.message.name}> = {`;
@@ -415,9 +430,9 @@ class MessageGenerator {
   private *fromBytesMethod(): Generator<string, void> {
     if (!this.message.body.length) {
       yield `static fromBytes(): ${this.message.name} {`;
-      yield `  return new ${this.message.name}();`
-      yield `}`
-      return
+      yield `  return new ${this.message.name}();`;
+      yield `}`;
+      return;
     }
     yield `static fromBytes(bytes: Uint8Array): ${this.message.name} {`;
     this.imports.from(this.parent.mod).import("fromBytes");
@@ -430,9 +445,9 @@ class MessageGenerator {
   private *fromJSONMethod() {
     if (!this.message.body.length) {
       yield `static fromJSON(): ${this.message.name} {`;
-      yield `  return new ${this.message.name}();`
-      yield `}`
-      return
+      yield `  return new ${this.message.name}();`;
+      yield `}`;
+      return;
     }
     this.imports.from(this.parent.mod).import("JSON", "fromJSON");
     yield `static fromJSON(json: JSON): ${this.message.name} {`;
@@ -445,9 +460,9 @@ class MessageGenerator {
   private *toBytesMethod(): Generator<string, void> {
     if (!this.message.body.length) {
       yield `toBytes(): Uint8Array {`;
-      yield `  return Uint8Array.of();`
-      yield `}`
-      return
+      yield `  return Uint8Array.of();`;
+      yield `}`;
+      return;
     }
     this.imports.from(this.parent.mod).import("toBytes");
     yield `toBytes(): Uint8Array {`;
@@ -458,9 +473,9 @@ class MessageGenerator {
   private *toJSONMethod(): Generator<string, void> {
     if (!this.message.body.length) {
       yield `toJSON() {`;
-      yield `  return {};`
-      yield `}`
-      return
+      yield `  return {};`;
+      yield `}`;
+      return;
     }
     this.parent.imports.from(this.parent.mod).import("toJSON");
     yield `toJSON() {`;
@@ -493,21 +508,57 @@ class MessageGenerator {
   }
 }
 
-const defaultMod = `https://deno.land/x/protod@${version}/mod.ts`;
 interface ProtoGeneratorOpts {
-  mod?: string;
+  mod: string;
+  protoPath: string;
+}
+
+class ProtoScanner implements Visitor {
+  enums: Set<string> = new Set();
+  messages: Set<string> = new Set();
+  constructor(proto: Proto) {
+    proto.accept(this);
+  }
+
+  visitEnum(node: Enum) {
+    this.enums.add(node.name);
+  }
+
+  visitMessage(node: Message) {
+    this.messages.add(node.name);
+  }
 }
 
 class ProtoGenerator implements Visitor {
   syntax: 2 | 3 = 3;
   mod: string;
+  protoPath: string;
   imports = new ImportMap();
+  dependencies: Set<Import> = new Set();
+  scopedMessages: Map<string, Set<string>> = new Map();
+  scopedEnums: Map<string, Set<string>> = new Map();
   messages: Map<string, MessageGenerator> = new Map();
   enums: Map<string, EnumGenerator> = new Map();
 
-  constructor(private proto: Proto, { mod }: ProtoGeneratorOpts = {}) {
-    this.mod = mod || defaultMod;
+  constructor(
+    private proto: Proto,
+    { mod, protoPath }: ProtoGeneratorOpts,
+  ) {
+    this.mod = mod;
+    this.protoPath = protoPath;
     proto.accept(this);
+  }
+
+  visitImport(node: Import) {
+    this.dependencies.add(node);
+  }
+
+  async collectScopes() {
+    for (const node of this.dependencies) {
+      const {messages, enums} = await scan(join(this.protoPath, node.source));
+      this.scopedEnums.set('./' + node.source.replace(/.proto$/, ".pb.ts"), enums);
+      this.scopedMessages.set('./' + node.source.replace(/.proto$/, ".pb.ts"), messages);
+    }
   }
 
   visitEnum(node: Enum) {
@@ -553,14 +604,31 @@ class ProtoGenerator implements Visitor {
   }
 }
 
+async function scan(path: string) {
+  const file = await Deno.open(path, { read: true });
+  try {
+    return new ProtoScanner(await parse(file, {}));
+  } finally {
+    file.close();
+  }
+}
+
+const defaultMod = `https://deno.land/x/protod@${version}/mod.ts`;
 export async function generate(
   path: string,
-  opts: ProtoGeneratorOpts = {},
+  opts: Partial<ProtoGeneratorOpts> = {},
 ): Promise<string> {
   const file = await Deno.open(path, { read: true });
   try {
-    return new ProtoGenerator(await parse(file, { comments: true }), opts)
-      .toString();
+    const proto = new ProtoGenerator(
+      await parse(file, { comments: true }),
+      Object.assign({
+        mod: defaultMod,
+        protoPath: dirname(path),
+      } as ProtoGeneratorOpts, opts),
+    )
+    await proto.collectScopes()
+    return proto.toString()
   } finally {
     file.close();
   }

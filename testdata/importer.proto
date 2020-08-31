@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+import "importee.proto";
+
+message Importer {
+    Importee msg = 1;
+}
