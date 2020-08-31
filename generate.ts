@@ -619,7 +619,7 @@ async function scan(path: string) {
   }
 }
 
-const defaultMod = `https://deno.land/x/protod@${version}/mod.ts`;
+const defaultMod = `https://deno.land/x/protod@v${version}/mod.ts`;
 export async function generate(
   path: string,
   opts: Partial<ProtoGeneratorOpts> = {},
