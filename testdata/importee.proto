@@ -3,3 +3,8 @@ syntax = "proto3";
 message Importee {
   string foo = 1;
 }
+
+enum Importeenum {
+  INVALID = 0;
+  VALID = 1;
+}

@@ -130,6 +130,18 @@ function getFieldNativeType(field: Field | Oneof | MapField): string {
   return `${field.fieldType}${field.repeated ? "[]" : ""}`;
 }
 
+function hasScopedEnum(proto: ProtoGenerator, name: string): string | void {
+  for (const [source, idents] of proto.scopedEnums) {
+    if (idents.has(name)) return source
+  }
+}
+
+function hasScopedMessage(proto: ProtoGenerator, name: string): string | void {
+  for (const [source, idents] of proto.scopedMessages) {
+    if (idents.has(name)) return source
+  }
+}
+
 function getFieldTypeFn(
   proto: ProtoGenerator,
   field: Field | Oneof | MapField,
@@ -162,25 +174,21 @@ function getFieldTypeFn(
       proto.imports.from(proto.mod).import(`${field.fieldType}Field`);
       fieldType = `${field.fieldType}Field`;
       wireType = WireTypes[field.fieldType as Type];
-    } else if (proto.scopedEnums) {
-      let mod = null;
-      fieldType = field.fieldType;
-      for (const [source, idents] of proto.scopedEnums) {
-        if (idents.has(fieldType)) {
-          mod = source;
-          break;
+    } else {
+      let mod: string | void = hasScopedEnum(proto, field.fieldType)
+      if (mod) {
+        wireType = 1;
+        proto.imports.from(proto.mod).import("enumField");
+        proto.imports.from(mod || "./deps.ts").import(field.fieldType);
+        fieldType = `enumField(${field.fieldType})`
+      } else {
+        mod = hasScopedMessage(proto, field.fieldType)
+        if (mod) {
+          wireType = 2;
+          proto.imports.from(mod || "./deps.ts").import(field.fieldType);
+          fieldType = field.fieldType
         }
       }
-      if (!mod) {
-        for (const [source, idents] of proto.scopedMessages) {
-          if (idents.has(fieldType)) {
-            mod = source;
-            break;
-          }
-        }
-      }
-      proto.imports.from(mod || "./deps.ts").import(fieldType);
-      wireType = 2;
     }
     if (field.repeated) {
       const isPacked = isPackedField(field, proto.syntax);
@@ -396,6 +404,8 @@ class MessageGenerator {
       } else if (this.parent.enums.has(field.fieldType)) {
         const Enum = this.parent.enums.get(field.fieldType)!;
         yield `  this.${name} = init.${name} ?? ${field.fieldType}.${Enum.default};`;
+      } else if (hasScopedEnum(this.parent, field.fieldType)) {
+        yield `  this.${name} = init.${name} ?? 0;`;
       } else {
         const defaultValue = getDefaultValue(field);
         yield `  this.${name} = init.${name} ?? ${defaultValue};`;

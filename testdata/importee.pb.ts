@@ -9,6 +9,11 @@ import {
   toJSON,
 } from "../mod.ts";
 
+export enum Importeenum {
+  INVALID = 0,
+  VALID = 1,
+}
+
 export class Importee {
   foo: string;
 

@@ -2,6 +2,7 @@
 import {
   FieldSet,
   JSON,
+  enumField,
   fromBytes,
   fromJSON,
   toBytes,
@@ -9,17 +10,21 @@ import {
 } from "../mod.ts";
 import {
   Importee,
+  Importeenum,
 } from "./importee.pb.ts";
 
 export class Importer {
   msg: Importee;
+  eeenumjenkins: Importeenum;
 
   constructor(init: Partial<Importer>) {
     this.msg = init.msg ?? new Importee({});
+    this.eeenumjenkins = init.eeenumjenkins ?? 0;
   }
 
   static fields: FieldSet<Importer> = {
     msg: [1, Importee],
+    eeenumjenkins: [2, enumField(Importeenum)],
   };
 
   static fromBytes(bytes: Uint8Array): Importer {
