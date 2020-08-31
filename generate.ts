@@ -353,6 +353,10 @@ class MessageGenerator {
   }
 
   private *classConstructor(): Generator<string, void> {
+    if (!this.message.body.length) {
+      yield `constructor() {}`
+      return
+    }
     yield `constructor(init: Partial<${this.message.name}>) {`;
     for (const field of getFields(this.message)) {
       const name = field.name;
@@ -386,6 +390,10 @@ class MessageGenerator {
   }
 
   private *fieldsField(): Generator<string, void> {
+    if (!this.message.body.length) {
+      yield `static fields = {};`
+      return
+    }
     this.imports.from(this.parent.mod).import("FieldSet");
     yield `static fields: FieldSet<${this.message.name}> = {`;
     for (const field of getFields(this.message)) {
@@ -405,6 +413,12 @@ class MessageGenerator {
   }
 
   private *fromBytesMethod(): Generator<string, void> {
+    if (!this.message.body.length) {
+      yield `static fromBytes(): ${this.message.name} {`;
+      yield `  return new ${this.message.name}();`
+      yield `}`
+      return
+    }
     yield `static fromBytes(bytes: Uint8Array): ${this.message.name} {`;
     this.imports.from(this.parent.mod).import("fromBytes");
     yield `  return new ${this.message.name}(`;
@@ -414,6 +428,12 @@ class MessageGenerator {
   }
 
   private *fromJSONMethod() {
+    if (!this.message.body.length) {
+      yield `static fromJSON(): ${this.message.name} {`;
+      yield `  return new ${this.message.name}();`
+      yield `}`
+      return
+    }
     this.imports.from(this.parent.mod).import("JSON", "fromJSON");
     yield `static fromJSON(json: JSON): ${this.message.name} {`;
     yield `  return new ${this.message.name}(`;
@@ -423,6 +443,12 @@ class MessageGenerator {
   }
 
   private *toBytesMethod(): Generator<string, void> {
+    if (!this.message.body.length) {
+      yield `toBytes(): Uint8Array {`;
+      yield `  return Uint8Array.of();`
+      yield `}`
+      return
+    }
     this.imports.from(this.parent.mod).import("toBytes");
     yield `toBytes(): Uint8Array {`;
     yield `  return toBytes<${this.message.name}>(this, ${this.message.name}.fields);`;
@@ -430,6 +456,12 @@ class MessageGenerator {
   }
 
   private *toJSONMethod(): Generator<string, void> {
+    if (!this.message.body.length) {
+      yield `toJSON() {`;
+      yield `  return {};`
+      yield `}`
+      return
+    }
     this.parent.imports.from(this.parent.mod).import("toJSON");
     yield `toJSON() {`;
     yield `  return toJSON<${this.message.name}>(this, ${this.message.name}.fields);`;
@@ -441,7 +473,7 @@ class MessageGenerator {
     yield `export class ${this.message.name} {`;
     for (const line of this.classFields()) yield `  ${line}`;
     for (const line of this.classGetters()) yield `  ${line}`;
-    yield "";
+    if (this.message.body.length) yield "";
     for (const line of this.classConstructor()) yield `  ${line}`;
     yield "";
     for (const line of this.fieldsField()) yield `  ${line}`;

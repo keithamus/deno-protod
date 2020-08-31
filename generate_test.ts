@@ -80,6 +80,7 @@ for (const messageTest of messageTests) {
     assertEquals([...deserialize(reqB.toBytes())], [...deserialize(bin)]);
     assertEquals([...deserialize(reqJ.toBytes())], [...deserialize(bin)]);
   });
+  if (!Class) continue;
   bench({
     name: `${base}${Class!.name}Bytes`,
     runs: 1000,
