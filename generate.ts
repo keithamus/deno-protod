@@ -555,9 +555,15 @@ class ProtoGenerator implements Visitor {
 
   async collectScopes() {
     for (const node of this.dependencies) {
-      const {messages, enums} = await scan(join(this.protoPath, node.source));
-      this.scopedEnums.set('./' + node.source.replace(/.proto$/, ".pb.ts"), enums);
-      this.scopedMessages.set('./' + node.source.replace(/.proto$/, ".pb.ts"), messages);
+      const { messages, enums } = await scan(join(this.protoPath, node.source));
+      this.scopedEnums.set(
+        "./" + node.source.replace(/.proto$/, ".pb.ts"),
+        enums,
+      );
+      this.scopedMessages.set(
+        "./" + node.source.replace(/.proto$/, ".pb.ts"),
+        messages,
+      );
     }
   }
 
@@ -626,9 +632,9 @@ export async function generate(
         mod: defaultMod,
         protoPath: dirname(path),
       } as ProtoGeneratorOpts, opts),
-    )
-    await proto.collectScopes()
-    return proto.toString()
+    );
+    await proto.collectScopes();
+    return proto.toString();
   } finally {
     file.close();
   }

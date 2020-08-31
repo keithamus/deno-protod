@@ -1,1 +1,1 @@
-export {Importee} from "./importee.pb.ts"
+export { Importee } from "./importee.pb.ts";
