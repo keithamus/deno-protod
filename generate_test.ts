@@ -6,7 +6,7 @@ import {
   runBenchmarks,
   bench,
   BenchmarkTimer,
-} from "https://deno.land/std@0.66.0/testing/bench.ts";
+} from "https://deno.land/std@0.74.0/testing/bench.ts";
 
 interface Proto {
   toBytes(): Uint8Array;
