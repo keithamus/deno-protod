@@ -1,4 +1,4 @@
-import { JSON, FieldTypeVarint } from "./types.ts";
+import { FieldTypeVarint, JSON } from "./types.ts";
 
 /**
  * A helper object for ProtoBuf Enum fields.

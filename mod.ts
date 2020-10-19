@@ -1,6 +1,6 @@
 export { serialize } from "./serialize.ts";
 export { deserialize } from "./deserialize.ts";
-export type { ProtoBufEntry, JSON, FieldType, FieldSet } from "./types.ts";
+export type { FieldSet, FieldType, JSON, ProtoBufEntry } from "./types.ts";
 
 export { int32Field } from "./int32.ts";
 export { int64Field } from "./int64.ts";

@@ -3,9 +3,9 @@ import { generate } from "./generate.ts";
 import { deserialize } from "./deserialize.ts";
 import { JSON } from "./types.ts";
 import {
-  runBenchmarks,
   bench,
   BenchmarkTimer,
+  runBenchmarks,
 } from "https://deno.land/std@0.74.0/testing/bench.ts";
 
 interface Proto {

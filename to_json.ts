@@ -1,4 +1,4 @@
-import type { JSON, FieldSet, MessageInstance } from "./types.ts";
+import type { FieldSet, JSON, MessageInstance } from "./types.ts";
 
 type JSONAble<T> = {
   [P in keyof T]?: JSON;

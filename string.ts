@@ -1,4 +1,4 @@
-import { JSON, FieldTypeLengthDelimited } from "./types.ts";
+import { FieldTypeLengthDelimited, JSON } from "./types.ts";
 
 /**
  * A helper object for ProtoBuf String Fields.
