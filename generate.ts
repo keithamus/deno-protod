@@ -290,13 +290,23 @@ class ImportGenerator {
   }
 
   *[Symbol.iterator](): Generator<string, void> {
-    yield `import {`;
-    for (const id of [...this.#imports].sort()) yield `  ${id},`;
-    yield `} from "${this.module}";`;
+    for (
+      const id of [...this.#imports].sort((a, b) =>
+        a.toLowerCase().localeCompare(b.toLowerCase())
+      )
+    ) {
+      yield id;
+    }
   }
 
   toString() {
-    return [...this].join("\n");
+    const line = `import { ` + [...this].join(", ") +
+      ` } from "${this.module}";`;
+    if (line.length >= 80) {
+      return `import {\n  ` + [...this].join(",\n  ") +
+        `,\n} from "${this.module}";`;
+    }
+    return line;
   }
 }
 
@@ -314,7 +324,7 @@ class ImportMap {
 
   *[Symbol.iterator]() {
     for (const importGenerator of this.#imports) {
-      for (const line of importGenerator) yield line;
+      yield importGenerator.toString();
     }
   }
 
