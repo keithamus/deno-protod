@@ -1,4 +1,4 @@
-import type { ProtoBufEntry, FieldSet } from "./types.ts";
+import type { FieldSet, ProtoBufEntry } from "./types.ts";
 import { deserialize } from "./deserialize.ts";
 
 /**

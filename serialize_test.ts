@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.66.0/testing/asserts.ts";
-import { serialize, deserialize, ProtoBufEntry } from "./mod.ts";
+import { deserialize, ProtoBufEntry, serialize } from "./mod.ts";
 
 function assertMod(bytes: Uint8Array, value: ProtoBufEntry[]) {
   let i = -1;

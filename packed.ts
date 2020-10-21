@@ -1,12 +1,12 @@
 import {
-  JSON,
   FieldType,
+  JSON,
+  Message,
   MetaFieldBuf,
   ProtoBufEntry,
-  Message,
 } from "./types.ts";
 import { concat } from "./concat.ts";
-import { encode, decode } from "./deps.ts";
+import { decode, encode } from "./deps.ts";
 
 /**
  * A helper object for Fields that need to use "Packed" encoding.

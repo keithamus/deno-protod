@@ -5,10 +5,10 @@
 
 import {
   FieldSet,
-  JSON,
   fromBytes,
   fromJSON,
   int32Field,
+  JSON,
   stringField,
   toBytes,
   toJSON,

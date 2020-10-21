@@ -1,10 +1,10 @@
 import {
-  JSON,
   FieldType,
-  ProtoBufEntry,
-  MetaFieldBuf,
+  JSON,
   Message,
   MessageInstance,
+  MetaFieldBuf,
+  ProtoBufEntry,
 } from "./types.ts";
 import { deserialize } from "./deserialize.ts";
 import { serialize } from "./serialize.ts";

@@ -3,10 +3,10 @@ import { generate } from "./generate.ts";
 import { deserialize } from "./deserialize.ts";
 import { JSON } from "./types.ts";
 import {
-  runBenchmarks,
   bench,
   BenchmarkTimer,
-} from "https://deno.land/std@0.66.0/testing/bench.ts";
+  runBenchmarks,
+} from "https://deno.land/std@0.74.0/testing/bench.ts";
 
 interface Proto {
   toBytes(): Uint8Array;

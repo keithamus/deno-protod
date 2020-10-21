@@ -1,4 +1,4 @@
-import { JSON, FieldType64Bit } from "./types.ts";
+import { FieldType64Bit, JSON } from "./types.ts";
 
 /**
  * A helper object for ProtoBuf Signed Fixed32 fields.

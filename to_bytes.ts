@@ -1,4 +1,4 @@
-import type { MessageInstance, ProtoBufEntry, FieldSet } from "./types.ts";
+import type { FieldSet, MessageInstance, ProtoBufEntry } from "./types.ts";
 import { serialize } from "./serialize.ts";
 
 /**

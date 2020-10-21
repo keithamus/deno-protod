@@ -1,10 +1,10 @@
 import {
-  JSON,
   FieldType,
-  ProtoBufEntry,
-  MetaFieldBuf,
-  MessageInstance,
+  JSON,
   Message,
+  MessageInstance,
+  MetaFieldBuf,
+  ProtoBufEntry,
 } from "./types.ts";
 
 /**

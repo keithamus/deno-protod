@@ -1,20 +1,20 @@
 import { version } from "./version.ts";
 
 import {
-  Proto,
-  Visitor,
-  Import,
+  dirname,
   Enum,
   EnumField,
-  Message,
   Field,
-  Oneof,
+  Import,
+  join,
   MapField,
-  Syntax,
+  Message,
+  Oneof,
   Option,
   parse,
-  dirname,
-  join,
+  Proto,
+  Syntax,
+  Visitor,
 } from "./deps.ts";
 
 enum Type {
@@ -132,13 +132,13 @@ function getFieldNativeType(field: Field | Oneof | MapField): string {
 
 function hasScopedEnum(proto: ProtoGenerator, name: string): string | void {
   for (const [source, idents] of proto.scopedEnums) {
-    if (idents.has(name)) return source
+    if (idents.has(name)) return source;
   }
 }
 
 function hasScopedMessage(proto: ProtoGenerator, name: string): string | void {
   for (const [source, idents] of proto.scopedMessages) {
-    if (idents.has(name)) return source
+    if (idents.has(name)) return source;
   }
 }
 
@@ -175,18 +175,18 @@ function getFieldTypeFn(
       fieldType = `${field.fieldType}Field`;
       wireType = WireTypes[field.fieldType as Type];
     } else {
-      let mod: string | void = hasScopedEnum(proto, field.fieldType)
+      let mod: string | void = hasScopedEnum(proto, field.fieldType);
       if (mod) {
         wireType = 1;
         proto.imports.from(proto.mod).import("enumField");
         proto.imports.from(mod || "./deps.ts").import(field.fieldType);
-        fieldType = `enumField(${field.fieldType})`
+        fieldType = `enumField(${field.fieldType})`;
       } else {
-        mod = hasScopedMessage(proto, field.fieldType)
+        mod = hasScopedMessage(proto, field.fieldType);
         if (mod) {
           wireType = 2;
           proto.imports.from(mod || "./deps.ts").import(field.fieldType);
-          fieldType = field.fieldType
+          fieldType = field.fieldType;
         }
       }
     }
@@ -290,13 +290,23 @@ class ImportGenerator {
   }
 
   *[Symbol.iterator](): Generator<string, void> {
-    yield `import {`;
-    for (const id of [...this.#imports].sort()) yield `  ${id},`;
-    yield `} from "${this.module}";`;
+    for (
+      const id of [...this.#imports].sort((a, b) =>
+        a.toLowerCase().localeCompare(b.toLowerCase())
+      )
+    ) {
+      yield id;
+    }
   }
 
   toString() {
-    return [...this].join("\n");
+    const line = `import { ` + [...this].join(", ") +
+      ` } from "${this.module}";`;
+    if (line.length >= 80) {
+      return `import {\n  ` + [...this].join(",\n  ") +
+        `,\n} from "${this.module}";`;
+    }
+    return line;
   }
 }
 
@@ -314,7 +324,7 @@ class ImportMap {
 
   *[Symbol.iterator]() {
     for (const importGenerator of this.#imports) {
-      for (const line of importGenerator) yield line;
+      yield importGenerator.toString();
     }
   }
 

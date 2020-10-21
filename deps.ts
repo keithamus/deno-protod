@@ -1,16 +1,16 @@
 export {
-  Proto,
-  Visitor,
-  Import,
   Enum,
   EnumField,
-  Message,
   Field,
-  Oneof,
+  Import,
   MapField,
-  Syntax,
+  Message,
+  Oneof,
   Option,
   parse,
+  Proto,
+  Syntax,
+  Visitor,
 } from "https://deno.land/x/protoc_parser@v0.2.1/mod.ts";
 
 export { decode, encode } from "https://deno.land/x/varint@v2.0.0/varint.ts";

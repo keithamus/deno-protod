@@ -1,4 +1,4 @@
-import type { JSON, FieldSet, FieldType } from "./types.ts";
+import type { FieldSet, FieldType, JSON } from "./types.ts";
 
 /**
  * Given arbitrary JSON, and a set of fields to extract with their respective
