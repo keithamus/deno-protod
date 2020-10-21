@@ -71,21 +71,26 @@ function* getFields(
   }
 }
 
-function isPrimitive(field: Field): field is Field & { fieldType: Type } {
-  return Type[field.fieldType as Type] === field.fieldType;
+function isPrimitive(
+  field: Field,
+): field is Field & { fieldType: { name: Type } } {
+  return Type[field.fieldType.name as Type] === field.fieldType.name;
 }
 
 function isPackedField(field: Field, syntax: 2 | 3): boolean {
   if (
     field.repeated && syntax === 3 && isPrimitive(field) &&
-    !WireTypes[field.fieldType]
+    !WireTypes[field.fieldType.name]
   ) {
     return true;
   }
   let ret = false;
   field.accept({
     visitOption(opt: Option) {
-      if (opt.key === "packed" && opt.value.value === true) {
+      if (
+        opt.key.length === 1 && opt.key[0] === "packed" &&
+        opt.value.value === true
+      ) {
         ret = true;
       }
     },
@@ -116,7 +121,8 @@ const TypeNativeMap: Record<Type, string> = {
 function getFieldNativeType(field: Field | Oneof | MapField): string {
   if (field instanceof MapField) {
     const keyType = TypeNativeMap[field.keyType];
-    const valueType = TypeNativeMap[field.valueType as Type] || field.valueType;
+    const valueType = TypeNativeMap[field.valueType.name as Type] ||
+      field.valueType.name;
     return `Map<${keyType}, ${valueType}>`;
   }
   if (field instanceof Oneof) {
@@ -125,9 +131,11 @@ function getFieldNativeType(field: Field | Oneof | MapField): string {
       .join(" | ");
   }
   if (isPrimitive(field)) {
-    return `${TypeNativeMap[field.fieldType]}${field.repeated ? "[]" : ""}`;
+    return `${TypeNativeMap[field.fieldType.name]}${
+      field.repeated ? "[]" : ""
+    }`;
   }
-  return `${field.fieldType}${field.repeated ? "[]" : ""}`;
+  return `${field.fieldType.name}${field.repeated ? "[]" : ""}`;
 }
 
 function hasScopedEnum(proto: ProtoGenerator, name: string): string | void {
@@ -148,13 +156,16 @@ function getFieldTypeFn(
 ): [string, number] {
   if (field instanceof MapField) {
     proto.imports.from(proto.mod).import("mapField");
-    if (field.valueType in Type) {
-      proto.imports.from(proto.mod).import(`${field.valueType}Field`);
-      return [`mapField(${field.keyType}Field, ${field.valueType}Field)`, 2];
-    } else if (proto.enums.has(field.valueType)) {
+    if (field.valueType.name in Type) {
+      proto.imports.from(proto.mod).import(`${field.valueType.name}Field`);
+      return [
+        `mapField(${field.keyType}Field, ${field.valueType.name}Field)`,
+        2,
+      ];
+    } else if (proto.enums.has(field.valueType.name)) {
       proto.imports.from(proto.mod).import("enumField");
       return [
-        `mapField(${field.keyType}Field, enumField(${field.valueType}))`,
+        `mapField(${field.keyType}Field, enumField(${field.valueType.name}))`,
         2,
       ];
     }
@@ -163,30 +174,30 @@ function getFieldTypeFn(
   } else {
     let fieldType = "";
     let wireType: number = 0;
-    if (proto.enums.has(field.fieldType)) {
+    if (proto.enums.has(field.fieldType.name)) {
       proto.imports.from(proto.mod).import("enumField");
-      fieldType = `enumField(${field.fieldType})`;
+      fieldType = `enumField(${field.fieldType.name})`;
       wireType = 0;
-    } else if (proto.messages.has(field.fieldType)) {
-      fieldType = `${field.fieldType}`;
+    } else if (proto.messages.has(field.fieldType.name)) {
+      fieldType = `${field.fieldType.name}`;
       wireType = 2;
-    } else if (field.fieldType in Type) {
-      proto.imports.from(proto.mod).import(`${field.fieldType}Field`);
-      fieldType = `${field.fieldType}Field`;
-      wireType = WireTypes[field.fieldType as Type];
+    } else if (field.fieldType.name in Type) {
+      proto.imports.from(proto.mod).import(`${field.fieldType.name}Field`);
+      fieldType = `${field.fieldType.name}Field`;
+      wireType = WireTypes[field.fieldType.name as Type];
     } else {
-      let mod: string | void = hasScopedEnum(proto, field.fieldType);
+      let mod: string | void = hasScopedEnum(proto, field.fieldType.name);
       if (mod) {
         wireType = 1;
         proto.imports.from(proto.mod).import("enumField");
-        proto.imports.from(mod || "./deps.ts").import(field.fieldType);
-        fieldType = `enumField(${field.fieldType})`;
+        proto.imports.from(mod || "./deps.ts").import(field.fieldType.name);
+        fieldType = `enumField(${field.fieldType.name})`;
       } else {
-        mod = hasScopedMessage(proto, field.fieldType);
+        mod = hasScopedMessage(proto, field.fieldType.name);
         if (mod) {
           wireType = 2;
-          proto.imports.from(mod || "./deps.ts").import(field.fieldType);
-          fieldType = field.fieldType;
+          proto.imports.from(mod || "./deps.ts").import(field.fieldType.name);
+          fieldType = field.fieldType.name;
         }
       }
     }
@@ -195,7 +206,7 @@ function getFieldTypeFn(
       const wrapper = isPacked ? "packedField" : "repeatedField";
       proto.imports.from(proto.mod).import(wrapper);
       fieldType = `${wrapper}(${fieldType})`;
-      wireType = isPacked ? 2 : WireTypes[field.fieldType as Type];
+      wireType = isPacked ? 2 : WireTypes[field.fieldType.name as Type];
     }
     return [fieldType, wireType];
   }
@@ -209,7 +220,7 @@ function getDefaultValue(field: Field | Oneof | MapField): string {
   if (field instanceof Oneof) {
     return "null";
   }
-  const id = field.fieldType;
+  const id = field.fieldType.name;
   if (field.repeated) {
     return "[]";
   }
@@ -409,12 +420,12 @@ class MessageGenerator {
         yield "  }";
       } else if (field.repeated) {
         yield `  this.${name} = init.${name} ?? [];`;
-      } else if (this.parent.messages.has(field.fieldType)) {
-        yield `  this.${name} = init.${name} ?? new ${field.fieldType}({});`;
-      } else if (this.parent.enums.has(field.fieldType)) {
-        const Enum = this.parent.enums.get(field.fieldType)!;
-        yield `  this.${name} = init.${name} ?? ${field.fieldType}.${Enum.default};`;
-      } else if (hasScopedEnum(this.parent, field.fieldType)) {
+      } else if (this.parent.messages.has(field.fieldType.name)) {
+        yield `  this.${name} = init.${name} ?? new ${field.fieldType.name}({});`;
+      } else if (this.parent.enums.has(field.fieldType.name)) {
+        const Enum = this.parent.enums.get(field.fieldType.name)!;
+        yield `  this.${name} = init.${name} ?? ${field.fieldType.name}.${Enum.default};`;
+      } else if (hasScopedEnum(this.parent, field.fieldType.name)) {
         yield `  this.${name} = init.${name} ?? 0;`;
       } else {
         const defaultValue = getDefaultValue(field);
