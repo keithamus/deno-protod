@@ -11,7 +11,7 @@ export {
   Proto,
   Syntax,
   Visitor,
-} from "https://deno.land/x/protoc_parser@v0.2.6/mod.ts";
+} from "https://deno.land/x/protoc_parser@v0.2.7/mod.ts";
 
 export { decode, encode } from "https://deno.land/x/varint@v2.0.0/varint.ts";
 
