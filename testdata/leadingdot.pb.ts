@@ -9,6 +9,28 @@ import {
   toJSON,
 } from "../mod.ts";
 
+export class Bar {
+  constructor(init = {}) {}
+
+  static fields = {};
+
+  static fromBytes(): Bar {
+    return new Bar();
+  }
+
+  static fromJSON(): Bar {
+    return new Bar();
+  }
+
+  toBytes(): Uint8Array {
+    return Uint8Array.of();
+  }
+
+  toJSON() {
+    return {};
+  }
+}
+
 export class Foo {
   thing: Bar;
   things: Bar[];
@@ -41,27 +63,5 @@ export class Foo {
 
   toJSON() {
     return toJSON<Foo>(this, Foo.fields);
-  }
-}
-
-export class Bar {
-  constructor(init = {}) {}
-
-  static fields = {};
-
-  static fromBytes(): Bar {
-    return new Bar();
-  }
-
-  static fromJSON(): Bar {
-    return new Bar();
-  }
-
-  toBytes(): Uint8Array {
-    return Uint8Array.of();
-  }
-
-  toJSON() {
-    return {};
   }
 }
