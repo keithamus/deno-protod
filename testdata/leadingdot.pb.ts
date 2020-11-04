@@ -45,7 +45,7 @@ export class Foo {
 }
 
 export class Bar {
-  constructor() {}
+  constructor(init = {}) {}
 
   static fields = {};
 
