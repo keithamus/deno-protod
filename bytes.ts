@@ -13,7 +13,7 @@ export const bytesField: FieldTypeLengthDelimited<Uint8Array> = {
 
   fromJSON(value: NonNullable<JSON>): Uint8Array {
     if (typeof value == "string") {
-      let str = atob(
+      const str = atob(
         value.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_"),
       );
       const bin = new Uint8Array(str.length);

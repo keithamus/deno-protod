@@ -1,4 +1,4 @@
-import {
+ import {
   FieldType,
   JSON,
   Message,
@@ -29,7 +29,7 @@ export const mapField = <K, V>(
 
   fromJSON(obj: NonNullable<JSON>): Map<K, V> {
     const map = new Map<K, V>();
-    for (let [key, value] of Object.entries(obj)) {
+    for (const [key, value] of Object.entries(obj)) {
       map.set(keyFn.fromJSON(key), valueFn.fromJSON(value));
     }
     return map;
@@ -50,7 +50,7 @@ export const mapField = <K, V>(
   },
 
   fromEntry(entries: ProtoBufEntry[]): Map<K, V> {
-    let map: Map<K, V> = new Map();
+    const map: Map<K, V> = new Map();
     for (const topEntry of entries) {
       if (topEntry[1] !== 2) continue;
       let key: K | null = null;

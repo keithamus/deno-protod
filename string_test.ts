@@ -5,7 +5,7 @@ import {
 import { stringField } from "./string.ts";
 import { JSON } from "./types.ts";
 
-Deno.test("stringField.fromBytes", async () => {
+Deno.test("stringField.fromBytes", () => {
   const tt: [Uint8Array, string][] = [
     [Uint8Array.of(0x66, 0x6f, 0x6f), "foo"],
   ];
@@ -14,7 +14,7 @@ Deno.test("stringField.fromBytes", async () => {
   }
 });
 
-Deno.test("stringField.toBytes", async () => {
+Deno.test("stringField.toBytes", () => {
   const tt: [string, Uint8Array][] = [
     ["foo", Uint8Array.of(0x66, 0x6f, 0x6f)],
   ];
@@ -23,7 +23,7 @@ Deno.test("stringField.toBytes", async () => {
   }
 });
 
-Deno.test("stringField.fromJSON", async () => {
+Deno.test("stringField.fromJSON", () => {
   const tt: [string, string][] = [
     ["foo", "foo"],
   ];
@@ -32,7 +32,7 @@ Deno.test("stringField.fromJSON", async () => {
   }
 });
 
-Deno.test("stringField.fromJSON failure", async () => {
+Deno.test("stringField.fromJSON failure", () => {
   const tt: NonNullable<JSON>[] = [
     1,
     [],

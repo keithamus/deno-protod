@@ -4,7 +4,7 @@ import { int32Field } from "./int32.ts";
 import { stringField } from "./string.ts";
 import { FieldType, Message, ProtoBufEntry } from "./types.ts";
 
-Deno.test("mapField.fromEntry", async () => {
+Deno.test("mapField.fromEntry", () => {
   const tt: [
     ProtoBufEntry,
     Exclude<FieldType<unknown>, Message<unknown>>,

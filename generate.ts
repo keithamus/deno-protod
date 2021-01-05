@@ -173,7 +173,7 @@ function getFieldTypeFn(
     return ["", 0];
   } else {
     let fieldType = "";
-    let wireType: number = 0;
+    let wireType = 0;
     if (proto.enums.has(field.fieldType.name)) {
       proto.imports.from(proto.mod).import("enumField");
       fieldType = `enumField(${field.fieldType.name})`;

@@ -45,7 +45,7 @@ export const packedField = <T>(
   },
 
   fromEntry(entries: ProtoBufEntry[]): T[] {
-    let values: T[] = [];
+    const values: T[] = [];
     for (const entry of entries) {
       if (entry[1] !== 2) continue;
       const bytes = entry[2];
