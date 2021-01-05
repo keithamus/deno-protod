@@ -1,4 +1,4 @@
- import {
+import {
   FieldType,
   JSON,
   Message,
