@@ -584,9 +584,20 @@ class ProtoGenerator implements Visitor {
     this.dependencies.add(node);
   }
 
+  static wellKnownTypes: Record<
+    string,
+    { messages: Set<string>; enums: Set<string> }
+  > = {
+    "google/protobuf/descriptor.proto": {
+      messages: new Set(),
+      enums: new Set(),
+    },
+  };
+
   async collectScopes() {
     for (const node of this.dependencies) {
-      const { messages, enums } = await scan(join(this.protoPath, node.source));
+      const { messages, enums } = ProtoGenerator.wellKnownTypes[node.source] ??
+        await scan(join(this.protoPath, node.source));
       this.scopedEnums.set(
         "./" + node.source.replace(/.proto$/, ".pb.ts"),
         enums,
