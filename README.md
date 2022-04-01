@@ -14,7 +14,7 @@ To install:
 ```sh
 # Needs `--allow-read` to be able to read .proto files
 # Needs `--allow-write` to be able to write pb.ts files
-deno install --allow-read --allow-write https://deno.land/x/protod@v0.1.3/protod.ts
+deno install --allow-read --allow-write https://deno.land/x/protod/protod.ts
 
 protod gen my.proto
 ```
