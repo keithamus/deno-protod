@@ -1,4 +1,4 @@
-import { parse } from "https://deno.land/std@0.66.0/flags/mod.ts";
+import { parse } from "https://deno.land/std@0.133.0/flags/mod.ts";
 import { generate } from "./generate.ts";
 import { version as v } from "./version.ts";
 
