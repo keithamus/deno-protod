@@ -28,7 +28,7 @@ export const enumField = <T>(Enum: T): FieldTypeVarint<T[keyof T]> => ({
   },
 
   toBytes(value: T[keyof T]): bigint {
-    return BigInt.asUintN(64, BigInt(value));
+    return BigInt.asUintN(64, BigInt(value as unknown as number));
   },
 
   toJSON(value: T[keyof T]): string {
