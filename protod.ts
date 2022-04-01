@@ -17,8 +17,8 @@ const command = (args.shift() || "") as keyof typeof commands;
 const commands = {
   async gen(opts: (string | number)[]) {
     const { outfile, _: args } = parse(opts.map(String), {
-      string: [],
-      boolean: ["outfile"],
+      string: ["outfile"],
+      boolean: [],
       stopEarly: true,
       alias: {
         "o": "outfile",
